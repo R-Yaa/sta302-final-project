@@ -1,0 +1,5 @@
+"Model","AIC","BIC","Adj_R2"
+"Primary (6 pred.)",5942.12,6003.9,0.2726
+"Drop superhost (5 pred.)",5940.48,5996.08,0.2727
+"AIC stepwise",5940.48,5996.08,0.2727
+"BIC stepwise",5940.48,5996.08,0.2727

@@ -1,0 +1,4 @@
+"Model","AIC","Adj_R2","Decision"
+"Primary (raw deposit)",5942.12,0.2726,"Baseline"
+"log1p(security_deposit)",5977.72,0.2653,"Rejected (AIC worse)"
+"log1p(bedrooms + bathrooms)",6073.12,0.2454,"Rejected (AIC worse)"

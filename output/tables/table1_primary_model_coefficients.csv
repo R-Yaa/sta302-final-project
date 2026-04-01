@@ -1,0 +1,10 @@
+"Predictor","Estimate","Std_Error","CI_Lower","CI_Upper","t_value","p_value"
+"(Intercept)",4.3508,0.0268,4.2982,4.4034,162.219,0
+"bedrooms",0.2842,0.015,0.2547,0.3136,18.921,0
+"bathrooms",0.1384,0.0212,0.0969,0.1799,6.536,0
+"guests_included",0.0809,0.0097,0.0619,0.0999,8.337,0
+"property_typeCondominium",-1e-04,0.0383,-0.0752,0.0751,-0.002,0.9982
+"property_typeHouse",-0.478,0.0267,-0.5303,-0.4257,-17.927,0
+"property_typeOther",-0.0733,0.0436,-0.1587,0.0122,-1.681,0.0929
+"host_is_superhostt",-0.0178,0.0297,-0.076,0.0403,-0.601,0.548
+"security_deposit",2e-04,0,2e-04,3e-04,6.319,0
