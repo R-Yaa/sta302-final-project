@@ -1,5 +1,4 @@
 # sta302-final-project
-# STA302 Final Project — Airbnb Boston Price Analysis
 
 **Research Question:** To what extent do property type, capacity, and listing
 characteristics explain variation in the log-transformed nightly price of
