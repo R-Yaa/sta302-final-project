@@ -99,12 +99,15 @@ abline(h = threshold, col = "firebrick", lty = 2)
 # -----------------------------------------------------------------------------
 leverage  <- hatvalues(model_primary)
 stud_res  <- rstudent(model_primary)
-p_leverage <- ncol(model.matrix(model_primary))  # number of parameters
+# Lecture 8: threshold is 2(p+1)/n where p+1 = number of parameters
+# including intercept. ncol(model.matrix()) gives p+1 directly.
+p_plus_1  <- ncol(model.matrix(model_primary))  # p+1 (includes intercept)
 n          <- nrow(df)
-lev_thresh <- 2 * p_leverage / n
+lev_thresh <- 2 * p_plus_1 / n   # Hoaglin & Welsch (1978): 2(p+1)/n
 
 cat("\n=== Leverage Analysis ===\n")
-cat("High leverage threshold (2p/n):", round(lev_thresh, 4), "\n")
+cat("High leverage threshold 2(p+1)/n:", round(lev_thresh, 4), "\n")
+cat("  where p+1 =", p_plus_1, "and n =", n, "\n")
 cat("High leverage observations:", sum(leverage > lev_thresh), "\n")
 
 # Flag the three observations from proposal residual plots
