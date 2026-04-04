@@ -2,9 +2,10 @@
 title: "Empirical Analysis of Airbnb Listing Prices in Boston, USA"
 author: "Riley Fewer, Polyna German, Arya Badal Kalarickal, Omar Salaheldin Shahata"
 date: "April 3, 2026"
-output: pdf_document
+output: html_document
 ---
 ```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = here::here())
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
 library(dplyr)
@@ -93,7 +94,7 @@ of price better satisfies the linear regression assumptions of linearity,
 constant variance, and approximately normally distributed residuals, 
 making log\_price a suitable continuous response variable for our linear 
 regression model (Figure 1B). Of the 3,585 raw listings, 2,243 had 
-missing values for security\_deposit, which were set to zero on the basis 
+missing values for security_deposit, which were set to zero on the basis 
 that a missing deposit indicates no requirement, consistent with Airbnb listing practice. After removing observations with missing values for 
 price, bedrooms, or bathrooms, the cleaned dataset contains 3,561 
 observations.
@@ -231,10 +232,10 @@ coef_df <- as.data.frame(summary_primary$coefficients)
 ci       <- confint(model_primary)
 
 coef_table <- data.frame(
-  Predictor  = c("Intercept", "Bedrooms", "Bathrooms",
-                 "Guests Included", "House vs Apt",
-                 "Other vs Apt", "Superhost (t vs f)",
-                 "Security Deposit"),
+  Predictor = c("Intercept", "Bedrooms", "Bathrooms",
+                "Guests Included", "Condominium vs Apt",
+                "House vs Apt", "Other vs Apt",
+                "Superhost (t vs f)", "Security Deposit"),
   Estimate   = round(coef_df[, "Estimate"], 4),
   Std_Error  = round(coef_df[, "Std. Error"], 4),
   t_value    = round(coef_df[, "t value"], 3),
@@ -403,10 +404,8 @@ plot(model_primary, which = 4,
 abline(h = threshold, col = "firebrick", lty = 2)
 ```
 
-```{r fig7, fig.cap="Figure 7: Influence plot showing hat-values (leverage) on the x-axis, studentized residuals on the y-axis, and Cook's Distance encoded as circle size and colour. Observations 373 and 1416 are high leverage but not influential. Observations 2264 and 3032 are extreme outliers in Y. Observations 212 and 2614 are genuinely influential.", fig.width=8, fig.height=6}
-car::influencePlot(model_primary,
-                   main = "Influence Plot",
-                   sub  = "Circle size proportional to Cook's Distance")
+```{r fig7, echo=FALSE, results='hide', fig.cap="Figure 7: Influence plot showing hat-values (leverage) on the x-axis, studentized residuals on the y-axis, and Cook's Distance encoded as circle size and colour. Observations 373 and 1416 are high leverage but not influential. Observations 2264 and 3032 are extreme outliers in Y. Observations 212 and 2614 are genuinely influential.", fig.width=8, fig.height=7}
+car::influencePlot(model_primary)
 ```
 
 In order to select variables we used backward stepwise selection, 
@@ -511,7 +510,7 @@ for apartments and condominiums in Boston's Airbnb market.
 Focusing on listing characteristics, each additional dollar of security 
 deposit is associated with a 0.03% increase in nightly price 
 ($p < 0.001$). While statistically significant, the economic magnitude 
-is negligible — a \$100 deposit increase corresponds to only a 2.9% 
+is negligible, a \$100 deposit increase corresponds to only a 2.9% 
 price increase. Consistent with Ert et al. (2016), this likely reflects 
 security deposit as a proxy for listing quality rather than a direct 
 pricing mechanism: hosts who charge deposits tend to manage 
@@ -525,8 +524,8 @@ Boston's premium housing market, where residential space is scarce and
 expensive, means that each additional private bedroom commands a 
 disproportionately higher return than in higher-density Asian cities 
 where space constraints are distributed differently across property 
-types. The finding aligns directionally with Cai et al. (2019) — 
-bedrooms matter — while the magnitude reflects Boston's specific market 
+types. The finding aligns directionally with Cai et al. (2019) that
+bedrooms matter, while the magnitude reflects Boston's specific market 
 conditions.
 
 The house discount of 41.0% relative to apartments is directionally 
@@ -594,14 +593,14 @@ was the expected result, as influential observations inflate residual
 variance and suppress $R^2$. Residual standard error decreased from 
 0.5565 to 0.5118, indicating a tighter and more accurate fit around the 
 regression line. The F-statistic of 210.37 ($p < 2.2 \times 10^{-16}$) 
-confirms that the model as a whole is highly significant — the five 
+confirms that the model as a whole is highly significant, the five 
 predictors collectively explain a statistically significant portion of 
 log-price variation. The AIC of 5103.43 and BIC of 5158.61 are lower 
 than the primary model values, though the direct numerical comparison is 
 approximate since the models were fit on different sample sizes following 
 outlier removal. An adjusted $R^2$ of 0.30 is consistent with the range 
-reported in the hedonic pricing literature for Airbnb datasets — Gibbs 
-et al. (2018) and Wang and Nicolau (2017) report comparable values — and 
+reported in the hedonic pricing literature for Airbnb datasets, Gibbs 
+et al. (2018) and Wang and Nicolau (2017) report comparable values, and 
 reflects the reality that structural variables alone cannot capture the 
 full complexity of short-term rental pricing, where unobserved factors 
 such as neighbourhood, interior quality, entertainment amenities, and 
@@ -689,7 +688,7 @@ badges when making decisions. Alternatively, superhost status may have
 indirect pricing effects that are mediated by listing quality indicators 
 already captured by other predictors in the model. Additionally, security 
 deposit retains a small but statistically significant positive association 
-with price, though its economic magnitude is negligible — a \$100 increase 
+with price, though its economic magnitude is negligible, a \$100 increase 
 in deposit corresponds to only a 2.9% price increase. As Ert et al. 
 (2016) argued, deposits serve as a proxy signal for listing quality 
 rather than a direct pricing mechanism, as hosts managing higher-quality 
@@ -741,13 +740,13 @@ influence pricing in Boston, rather than relying on superhost status as
 a blunt proxy. Finally, expanding the sample to include listings from 
 multiple cities, following the approach of Wang and Nicolau (2017), 
 would allow for cross-market comparisons that could illuminate whether 
-Boston's distinctive patterns — the lower relative pricing of houses and 
-the insignificance of superhost status — generalise to other urban 
+Boston's distinctive patterns, the lower relative pricing of houses and 
+the insignificance of superhost status, generalise to other urban 
 markets.
 
 In conclusion, this study provides empirical evidence that physical 
-capacity characteristics — specifically bedroom count, bathroom count, 
-and guest accommodation — are the primary drivers of nightly price 
+capacity characteristics, specifically bedroom count, bathroom count, 
+and guest accommodation, are the primary drivers of nightly price 
 variation among Boston Airbnb listings. These results are broadly 
 consistent with hedonic pricing literature while also revealing 
 market-specific patterns, most notably the strong house discount relative 
