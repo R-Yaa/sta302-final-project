@@ -44,7 +44,7 @@ This project investigates the following research question: **To what
 extent do property type, capacity, and listing characteristics explain 
 variation in the log-transformed nightly price of Airbnb listings in 
 Boston?** The response variable of interest is the logarithm of the 
-nightly listing price. The log transformation is used because nightly 
+nightly listing price. Log transformation is used because nightly 
 Airbnb prices exhibit a strongly right-skewed distribution and taking 
 the logarithm of price helps better satisfy the linear regression 
 assumptions of linearity, constant variance, and approximately normally 
@@ -57,16 +57,13 @@ subsequently removed, yielding a final model with five predictors.
 
 Existing academic literature provides motivation for this analysis. 
 Prior research demonstrates a strong relationship between property size, 
-capacity, and Airbnb prices. Cai et al. (2019) finds that nightly Airbnb 
+capacity, and prices. Cai et al. (2019) finds that nightly Airbnb 
 prices in Hong Kong increase with property size and capacity, reporting 
 that entire homes and private rooms are priced 377% higher than shared 
 rooms and that each additional bedroom increases price by approximately 
 17.8%. Similarly, Gibbs et al. (2018) finds that private rooms are 
 priced 28.3% and 40.1% lower than entire homes in Toronto and Calgary, 
-respectively, highlighting the premium hosts place on privacy. Barron 
-et al. (2020) provides broader market context, showing that a 1% 
-increase in Airbnb listings is associated with higher housing prices 
-and rental rates.
+respectively, highlighting the premium hosts place on privacy. 
 
 Linear regression is well-suited for this analysis because it allows 
 for the simultaneous examination of multiple numerical and categorical 
@@ -779,11 +776,13 @@ and observed listing prices.
 
 ## Section 7: Author Contributions
 
-**Omar Shahata:** Co-authored Section 3 (Primary Model Results and 
+**Omar Salaheldin Shahata:** Co-authored Section 3 (Primary Model Results and 
 Diagnostics), including statistical interpretation of the preliminary 
 model coefficients and residual diagnostic analysis. Co-authored Section 
 5 (Final Model Inference and Results), contributing to the coefficient 
-table presentation and model performance discussion.
+table presentation and model performance discussion. Contributed in the final 
+formatting of the report, including ensuring word counts are met and 
+references cited correctly. 
 
 **Arya Badal Kalarickal:** Developed and maintained all R scripts for 
 the final analysis pipeline, including data cleaning, exploratory data 
