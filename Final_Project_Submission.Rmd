@@ -2,10 +2,9 @@
 title: "Empirical Analysis of Airbnb Listing Prices in Boston, USA"
 author: "Riley Fewer, Polyna German, Arya Badal Kalarickal, Omar Salaheldin Shahata"
 date: "April 3, 2026"
-output: html_document
+output: pdf_document
 ---
 ```{r setup, include=FALSE}
-knitr::opts_knit$set(root.dir = here::here())
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
 library(dplyr)
@@ -104,7 +103,7 @@ bedrooms, number of bathrooms, guests accommodated, security deposit,
 property type, and superhost status. Of these, superhost status was 
 removed during model selection in Section 4, resulting in a final model with five predictors.
 
-```{r fig1, fig.cap="Figure 1: A) Raw nightly price distribution showing strong right skew. B) Log-transformed price distribution showing approximate symmetry, justifying the log transformation.", fig.width=9, fig.height=4}
+```{r fig1, fig.cap="A) Raw nightly price distribution showing strong right skew. B) Log-transformed price distribution showing approximate symmetry, justifying the log transformation.", fig.width=9, fig.height=4}
 p1a <- ggplot(df, aes(x = price)) +
   geom_histogram(bins = 60, fill = "steelblue", colour = "white") +
   labs(title = "A. Price Distribution (Raw)",
@@ -127,7 +126,7 @@ deposits, with the majority of amounts being between \$100 and \$500.
 According to Ert et al. (2016), listings with higher value and quality 
 often include deposits, which indirectly correlate with higher pricing.
 
-```{r fig2, fig.cap="Figure 2: A) Count of listings with and without a security deposit. The majority require no deposit. B) Distribution of non-zero deposit amounts, showing right skew with most values between $100 and $500.", fig.width=9, fig.height=4}
+```{r fig2, fig.cap="A) Count of listings with and without a security deposit. The majority require no deposit. B) Distribution of non-zero deposit amounts, showing right skew with most values between $100 and $500.", fig.width=9, fig.height=4}
 p2a <- ggplot(df,
               aes(x = factor(ifelse(security_deposit == 0,
                                     "No Deposit ($0)",
@@ -154,11 +153,11 @@ bedrooms and bathrooms affect nightly rates due to increased comfort and
 accommodation capacity. Figure 3C shows that superhost status is rare. 
 Superhosts can charge relatively high prices because the badge functions 
 as a quality signal that reduces uncertainty and increases consumer trust 
-(Almeida et al., 2025). Figure 3E displays the major trend of property 
+(Airbnb, n.d.; Almeida et al., 2025). Figure 3E displays the major trend of property 
 type to be an apartment. Amenities and increased privacy play a major 
 role in pricing according to Gibbs et al. (2018).
 
-```{r fig3, fig.cap="Figure 3: Distributions of all predictor variables. A) Bedrooms, B) Bathrooms, C) Superhost status, D) Guests included, E) Property type. All continuous predictors are right-skewed. Apartments dominate the property type distribution.", fig.width=11, fig.height=7}
+```{r fig3, fig.cap="Distributions of all predictor variables. A) Bedrooms, B) Bathrooms, C) Superhost status, D) Guests included, E) Property type. All continuous predictors are right-skewed. Apartments dominate the property type distribution.", fig.width=11, fig.height=7}
 p3a <- ggplot(df, aes(x = factor(bedrooms))) +
   geom_bar(fill = "steelblue") +
   labs(title = "A. Bedrooms", x = "Count", y = "Frequency") +
@@ -206,13 +205,11 @@ The preliminary linear regression estimated the logarithmic nightly
 prices of Airbnb listings in Boston using the six predictors mentioned 
 above. The initial model explains a meaningful portion of price variation 
 with an adjusted $R^2$ of 0.273. The joint significance of the predictors 
-is confirmed by the F-statistic of 191.5 ($p < 0.001$).
+is confirmed by the F-statistic of 167.77 ($p < 0.001$).
 
 Consistent with hedonic pricing models (Gibbs et al., 2018; Wang & 
 Nicolau, 2017), larger listings have higher rates. Each additional 
-bedroom and bathroom is associated with a 28.6% and 13.6% increase in 
-nightly price respectively. The bedroom effects align with Cai's (2019) 
-findings of a 17.8% increase in Hong Kong, though our stronger estimate 
+bedroom and bathroom is associated with a 32.9% and 14.8% increase in nightly price respectively. The bedroom effects align with Cai's (2019) findings of a 17.8% increase in Hong Kong, though our stronger estimate 
 likely reflects Boston's premium urban landscape. Guest capacity also has 
 a significantly positive effect, consistent with literature. Security 
 deposits exhibit a small but statistically significant positive 
@@ -246,7 +243,7 @@ rownames(coef_table) <- NULL
 kable(coef_table,
       col.names = c("Predictor", "Estimate", "Std. Error",
                     "t-value", "p-value"),
-      caption = "Table 1: Primary model regression coefficients.
+      caption = "Primary model regression coefficients.
       Reference category for property type is Apartment.",
       digits = 4)
 ```
@@ -267,7 +264,7 @@ fit_table <- data.frame(
 
 kable(fit_table,
       col.names = c("Statistic", "Value"),
-      caption = "Table 2: Primary model fit statistics.")
+      caption = "Primary model fit statistics.")
 ```
 
 Regression diagnostics indicate linear model assumptions are reasonable 
@@ -279,7 +276,7 @@ deviations, indicating mild departures from normality. Given the large
 sample size, these minor violations are unlikely to substantially bias 
 estimates, but motivated the model refinements described in Section 4.
 
-```{r fig4, fig.cap="Figure 4: Residual diagnostic plots for the primary model. Left: Residuals vs Fitted showing approximate linearity with mild heteroskedasticity at higher fitted values. Centre: Q-Q plot showing mild upper-tail deviation from normality. Right: Scale-Location plot confirming mild variance instability.", fig.width=10, fig.height=3.5}
+```{r fig4, fig.cap="Residual diagnostic plots for the primary model. Left: Residuals vs Fitted showing approximate linearity with mild heteroskedasticity at higher fitted values. Centre: Q-Q plot showing mild upper-tail deviation from normality. Right: Scale-Location plot confirming mild variance instability.", fig.width=10, fig.height=3.5}
 par(mfrow = c(1, 3))
 plot(model_primary, which = 1,
      main = "Residuals vs Fitted", sub = "")
@@ -292,48 +289,60 @@ par(mfrow = c(1, 1))
 
 ## Section 4: Model Selection
 ```{r section4-setup, include=FALSE}
-# Fit transformation comparison model
+# Fit transformation comparison model (on full data, for transformation decision)
 model_log_deposit <- lm(
   log_price ~ bedrooms + bathrooms + guests_included +
     property_type + host_is_superhost + log1p(security_deposit),
   data = df
 )
 
-# Power transform confirmation
+# Log transform of bedrooms and bathrooms (for transformation decision)
+model_log_rooms <- lm(
+  log_price ~ log1p(bedrooms) + log1p(bathrooms) + guests_included +
+    property_type + host_is_superhost + security_deposit,
+  data = df
+)
+
+# Power transform confirmation (on full data)
 pt_result <- car::powerTransform(
   price ~ bedrooms + bathrooms + guests_included +
     property_type + host_is_superhost + security_deposit,
   data = df
 )
 
-# Cook's Distance and influential observation removal
+# Cook's Distance and influential observation removal (from primary model)
 cooks_d         <- cooks.distance(model_primary)
 threshold       <- 4 / nrow(df)
 influential_idx <- which(cooks_d > threshold)
 df_final        <- df[-influential_idx, ]
 
-# Model without influential observations for coefficient comparison
+# Refit full model on cleaned data (post-outlier removal)
 model_no_inf <- lm(
   log_price ~ bedrooms + bathrooms + guests_included +
     property_type + host_is_superhost + security_deposit,
   data = df_final
 )
 
-# Stepwise selection
-model_step_aic <- step(model_primary, direction = "backward",
+# Stepwise selection on cleaned data (CORRECT order: outliers removed first)
+model_step_aic <- step(model_no_inf, direction = "backward",
                        trace = 0)
-model_step_bic <- step(model_primary, direction = "backward",
-                       trace = 0, k = log(nrow(df)))
+model_step_bic <- step(model_no_inf, direction = "backward",
+                       trace = 0, k = log(nrow(df_final)))
 
-# Model without superhost for comparison table
-model_no_superhost <- lm(
+# AIC of model_no_inf vs model_no_inf without superhost (for prose reporting)
+model_no_superhost_clean <- lm(
   log_price ~ bedrooms + bathrooms + guests_included +
     property_type + security_deposit,
-  data = df
+  data = df_final
 )
 
-# VIF for final model
-vif_vals <- car::vif(model_no_superhost)
+aic_with    <- AIC(model_no_inf)
+aic_without <- AIC(model_no_superhost_clean)
+bic_with    <- BIC(model_no_inf)
+bic_without <- BIC(model_no_superhost_clean)
+
+# VIF on the final predictor set (no superhost), clean data
+vif_vals <- car::vif(model_no_superhost_clean)
 ```
 
 The final model was reached by three main decisions: Box-Cox 
@@ -360,7 +369,7 @@ are on their original scale. The decision to not transform predictors
 also keeps the straightforward percentage-change interpretation of 
 coefficients in the log-response model.
 
-```{r fig5, fig.cap="Figure 5: Scale-Location plots comparing the primary model using raw security deposit (left) and log1p(security deposit) (right). The smoother trend and residual spread are nearly identical across both plots, providing no evidence that the transformation improves homoscedasticity.", fig.width=9, fig.height=4}
+```{r fig5, fig.cap="Scale-Location plots comparing the primary model using raw security deposit (left) and log1p(security deposit) (right). The smoother trend and residual spread are nearly identical across both plots, providing no evidence that the transformation improves homoscedasticity.", fig.width=9, fig.height=4}
 par(mfrow = c(1, 2))
 plot(model_primary,     which = 3,
      main = "Scale-Location: Raw Deposit", sub = "")
@@ -392,19 +401,19 @@ standardized residuals are small enough ($-0.20$ and $-0.15$),
 indicating that even though they show extreme values, they do not distort 
 the actual prediction. After removing the 161 influential observations, 
 the cleaned dataset for the final model contains $n = 3{,}400$ 
-observations. The Cook's Distance plot for the final model (Figure 10) 
+observations. The Cook's Distance plot for the final model (Figure 9) 
 confirms the success of these removals: the maximum Cook's $D$ falls 
-from 0.0139 to 0.0022, and the final residual diagnostics (Figure 9) 
+from 0.0139 to 0.0022, and the final residual diagnostics (Figure 8) 
 show improved symmetry in the Residuals vs. Fitted plot and better Q-Q 
 alignment relative to Figure 4.
 
-```{r fig6, fig.cap="Figure 6: Cook's Distance for all observations in the primary model. The dashed red line marks the threshold of 4/n = 0.00112. Observations 212, 1062, and 2614 are the most influential.", fig.width=8, fig.height=4.5}
+```{r fig6, fig.cap="Cook's Distance for all observations in the primary model. The dashed red line marks the threshold of 4/n = 0.00112. Observations 212, 1062, and 2614 are the most influential.", fig.width=8, fig.height=4.5}
 plot(model_primary, which = 4,
      main = "Cook's Distance (Primary Model)", sub = "")
 abline(h = threshold, col = "firebrick", lty = 2)
 ```
 
-```{r fig7, echo=FALSE, results='hide', fig.cap="Figure 7: Influence plot showing hat-values (leverage) on the x-axis, studentized residuals on the y-axis, and Cook's Distance encoded as circle size and colour. Observations 373 and 1416 are high leverage but not influential. Observations 2264 and 3032 are extreme outliers in Y. Observations 212 and 2614 are genuinely influential.", fig.width=8, fig.height=7}
+```{r fig7, echo=FALSE, results='hide', fig.cap="Influence plot showing hat-values (leverage) on the x-axis, studentized residuals on the y-axis, and Cook's Distance encoded as circle size and colour. Observations 373 and 1416 are high leverage but not influential. Observations 2264 and 3032 are extreme outliers in Y. Observations 212 and 2614 are genuinely influential.", fig.width=8, fig.height=7}
 car::influencePlot(model_primary)
 ```
 
@@ -412,8 +421,9 @@ In order to select variables we used backward stepwise selection,
 utilizing AIC and BIC as different scoring methods. Results of both 
 indicated that dropping the host\_is\_superhost predictor would improve 
 the model. Removing this variable resulted in a reduction of AIC by 
-1.64 points and BIC by 7.82, meaning that this predictor just added 
-complexity to the model without improving fit. None of the other 
+`r round(aic_with - aic_without, 2)` points and BIC by 
+`r round(bic_with - bic_without, 2)`, meaning that this predictor just 
+added complexity to the model without improving fit. None of the other 
 predictors were removed: bedrooms, bathrooms, guests included, property 
 type, and security deposit were all beneficial to the model, meaningfully 
 contributing to fit. To confirm the absence of multicollinearity, VIF 
@@ -435,7 +445,7 @@ summary_final <- summary(model_final)
 The final model regresses log-transformed nightly prices on five 
 predictors: bedroom count, bathroom count, guests included, property 
 type, and security deposit. The model was fit on 3,400 observations 
-after removal of influential points. Table 5 presents the estimated 
+after removal of influential points. Table 3 presents the estimated 
 coefficients, standard errors, 95% confidence intervals, and p-values.
 
 ```{r table5, echo=FALSE}
@@ -461,11 +471,15 @@ kable(final_table,
       col.names = c("Predictor", "Estimate", "Std. Error",
                     "95% CI Lower", "95% CI Upper",
                     "t-value", "p-value", "% Change"),
-      caption   = "Table 5: Final model coefficients, standard errors,
+      caption   = "Final model coefficients, standard errors,
       95% confidence intervals, p-values, and percentage change in
       nightly price. Reference category for property type is Apartment.",
       digits    = 4)
 ```
+
+Note: The intercept percentage change (7629.71%) represents the 
+predicted nightly price when all predictors equal zero and has no 
+meaningful real-world interpretation.
 
 **Coefficient Interpretations.** For a log-response model, a coefficient 
 $\hat{\beta}$ represents the estimated average change in $\log(\text{price})$ 
@@ -494,7 +508,7 @@ explain a meaningful and consistent portion of price variation in Boston
 Airbnb listings.
 
 With respect to property type, houses are priced 41.0% lower than 
-comparable apartments (95% CI: $-42.3\%$ to $-39.7\%$, $p < 0.001$). 
+comparable apartments (95% CI: $-43.8\%$ to $-38.0\%$, $p < 0.001$). 
 This is the single largest effect in the final model. Listings in the 
 Other category are priced 11.2% below apartments ($p = 0.011$). 
 Condominiums show no statistically significant price difference from 
@@ -549,7 +563,7 @@ deposit finding aligns with Ert et al. (2016) in showing that
 listing-level quality signals operate through pricing via indirect 
 proxies rather than host-level reputation mechanisms.
 
-**Model Performance.** Table 6 summarises performance metrics for both 
+**Model Performance.** Table 4 summarises performance metrics for both 
 the primary and final models.
 
 ```{r table6, echo=FALSE}
@@ -580,7 +594,7 @@ perf_table <- data.frame(
 
 kable(perf_table,
       col.names = c("Metric", "Primary Model", "Final Model"),
-      caption   = "Table 6: Model performance comparison between the
+      caption   = "Model performance comparison between the
       primary model (6 predictors, n = 3,561) and the final model
       (5 predictors, n = 3,400).")
 ```
@@ -605,12 +619,12 @@ reflects the reality that structural variables alone cannot capture the
 full complexity of short-term rental pricing, where unobserved factors 
 such as neighbourhood, interior quality, entertainment amenities, and 
 listing photographs contribute substantially to price variation. The 
-final model's diagnostic plots (Figure 9) show no systematic pattern in 
+final model's diagnostic plots (Figure 8) show no systematic pattern in 
 residuals versus fitted values, supporting the linearity assumption, and 
 the Q-Q plot shows only mild upper-tail deviation consistent with a small 
 number of high-priced listings that the model moderately underpredicts.
 
-```{r fig8-final, fig.cap="Figure 9: Residual diagnostic plots for the final model. Left: Residuals vs Fitted showing no systematic pattern, supporting linearity. Centre: Q-Q plot showing mild upper-tail deviation consistent with a small number of high-priced listings. Right: Scale-Location showing improved homoscedasticity relative to the primary model.", fig.width=10, fig.height=3.5}
+```{r fig8-final, fig.cap="Residual diagnostic plots for the final model. Left: Residuals vs Fitted showing no systematic pattern, supporting linearity. Centre: Q-Q plot showing mild upper-tail deviation consistent with a small number of high-priced listings. Right: Scale-Location showing improved homoscedasticity relative to the primary model.", fig.width=10, fig.height=3.5}
 par(mfrow = c(1, 3))
 plot(model_final, which = 1,
      main = "Residuals vs Fitted (Final)", sub = "")
@@ -621,11 +635,15 @@ plot(model_final, which = 3,
 par(mfrow = c(1, 1))
 ```
 
-```{r fig9-final-cooks, fig.cap="Figure 10: Cook's Distance for the final model. The maximum Cook's D has fallen from 0.0139 in the primary model to 0.0022, confirming the success of the influential observation removal.", fig.width=8, fig.height=4.5}
+```{r fig9-final-cooks, fig.cap="Cook's Distance for the final model. The maximum Cook's D has fallen from 0.0139 in the primary model to 0.0022, confirming the success of the influential observation removal.", fig.width=8, fig.height=4.5}
 plot(model_final, which = 4,
      main = "Cook's Distance (Final Model)", sub = "")
 abline(h = 4 / nrow(df_final), col = "firebrick", lty = 2)
 ```
+
+
+
+\pagebreak
 
 ## Section 6: Discussion and Conclusion
 
@@ -663,8 +681,8 @@ of Airbnb pricing in Boston, in line with the broader hedonic pricing
 literature (Gibbs et al., 2018).
 
 The role of property type reveals an interesting pattern in the Boston 
-market. Houses are priced 41.0% lower than apartments (95% CI: $-42.3\%$ 
-to $-39.7\%$, $p < 0.001$), and listings in the Other category are priced 
+market. Houses are priced 41.0% lower than apartments (95% CI: $-43.8\%$ to $-38.0\%$, $p < 0.001$),
+and listings in the Other category are priced 
 11.2% below apartments ($p = 0.011$). The house discount aligns with 
 Gibbs et al.'s (2018) finding that houses and private rooms are priced 
 28.3% to 40.1% below entire homes in Toronto and Calgary. Our 41.0% 
@@ -680,7 +698,7 @@ Although Almeida et al. (2025) demonstrates that review-based quality
 signals, including superhost designation, positively influence Airbnb 
 prices in some markets, this effect does not emerge in our Boston dataset. 
 Superhost status was removed from the model through backward stepwise 
-selection, as dropping it reduced AIC by 1.64 points and BIC by 7.82, 
+selection, as dropping it reduced AIC by 1.59 points and BIC by 7.72, 
 showing that it added complexity without improving model fit. One 
 interpretation is that Boston's short-term rental market is sufficiently 
 mature that guests weigh physical amenities more heavily than reputational 
@@ -792,6 +810,8 @@ as the analytical approach. Also authored the Discussion and Conclusion
 (Section 6), synthesizing key findings, situating results within the 
 existing literature, providing recommendations for hosts, guests, and 
 policymakers, and outlining directions for future research.
+
+\pagebreak
 
 ## Section 8: References
 
