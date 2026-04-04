@@ -2,7 +2,12 @@
 title: "Empirical Analysis of Airbnb Listing Prices in Boston, USA"
 author: "Riley Fewer, Polyna German, Arya Badal Kalarickal, Omar Salaheldin Shahata"
 date: "April 3, 2026"
-output: pdf_document
+output:
+  pdf_document:
+    keep_tex: false
+header-includes:
+  - \usepackage{float}
+  - \floatplacement{figure}{H}
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
@@ -48,12 +53,9 @@ nightly listing price. The log transformation is used because nightly
 Airbnb prices exhibit a strongly right-skewed distribution and taking 
 the logarithm of price helps better satisfy the linear regression 
 assumptions of linearity, constant variance, and approximately normally 
-distributed residuals. The preliminary model included six predictors: 
-number of bedrooms, number of bathrooms, number of guests accommodated, 
-property type, security deposit, and superhost status. These variables 
-capture key dimensions of physical size, guest capacity, and listing 
-characteristics. Through model selection, superhost status was 
-subsequently removed, yielding a final model with five predictors.
+distributed residuals. The preliminary model included six predictors spanning physical size, 
+guest capacity, and listing characteristics. Through model selection, 
+superhost status was removed, yielding a final model with five predictors.
 
 Existing academic literature provides motivation for this analysis. 
 Prior research demonstrates a strong relationship between property size, 
@@ -120,12 +122,6 @@ p1b <- ggplot(df, aes(x = log_price)) +
 p1a + p1b
 ```
 
-Figure 2A shows that the majority of listings do not charge a security 
-deposit. Figure 2B shows a highly right-skewed distribution of non-zero 
-deposits, with the majority of amounts being between \$100 and \$500. 
-According to Ert et al. (2016), listings with higher value and quality 
-often include deposits, which indirectly correlate with higher pricing.
-
 ```{r fig2, fig.cap="A) Count of listings with and without a security deposit. The majority require no deposit. B) Distribution of non-zero deposit amounts, showing right skew with most values between $100 and $500.", fig.width=9, fig.height=4}
 p2a <- ggplot(df,
               aes(x = factor(ifelse(security_deposit == 0,
@@ -146,16 +142,9 @@ p2b <- ggplot(subset(df, security_deposit > 0),
 p2a + p2b
 ```
 
-Figures 3A, 3B, and 3D show the distributions of bedrooms, bathrooms, 
-and guests\_included. These variables are discrete and right-skewed. 
-According to Wang and Nicolau (2017), larger properties with more 
-bedrooms and bathrooms affect nightly rates due to increased comfort and 
-accommodation capacity. Figure 3C shows that superhost status is rare. 
-Superhosts can charge relatively high prices because the badge functions 
-as a quality signal that reduces uncertainty and increases consumer trust 
-(Airbnb, n.d.; Almeida et al., 2025). Figure 3E displays the major trend of property 
-type to be an apartment. Amenities and increased privacy play a major 
-role in pricing according to Gibbs et al. (2018).
+Most listings charge no deposit (Figure 2A), though non-zero deposits 
+are right-skewed between $100 and $500 (Figure 2B); higher-quality 
+listings tend to charge deposits (Ert et al., 2016).
 
 ```{r fig3, fig.cap="Distributions of all predictor variables. A) Bedrooms, B) Bathrooms, C) Superhost status, D) Guests included, E) Property type. All continuous predictors are right-skewed. Apartments dominate the property type distribution.", fig.width=11, fig.height=7}
 p3a <- ggplot(df, aes(x = factor(bedrooms))) +
@@ -188,6 +177,15 @@ p3e <- ggplot(df, aes(y = property_type)) +
 
 (p3a + p3b + p3c) / (p3d + p3e)
 ```
+
+Bedrooms, bathrooms, and guests included are discrete and right-skewed (Figures 3A, 3B, 3D), 
+with larger properties commanding higher rates (Wang & Nicolau, 2017). 
+Superhost status is rare (Figure 3C), but functions as a quality signal 
+affecting trust and pricing (Airbnb, n.d.; Almeida et al., 2025). 
+Apartments dominate the property type distribution (Figure 3E), with 
+amenities and privacy playing a key role in pricing (Gibbs et al., 2018).
+
+\pagebreak
 
 ## Section 3: Primary Model Results and Diagnostics
 ```{r primary-model}
@@ -276,7 +274,7 @@ deviations, indicating mild departures from normality. Given the large
 sample size, these minor violations are unlikely to substantially bias 
 estimates, but motivated the model refinements described in Section 4.
 
-```{r fig4, fig.cap="Residual diagnostic plots for the primary model. Left: Residuals vs Fitted showing approximate linearity with mild heteroskedasticity at higher fitted values. Centre: Q-Q plot showing mild upper-tail deviation from normality. Right: Scale-Location plot confirming mild variance instability.", fig.width=10, fig.height=3.5}
+```{r fig4, fig.cap="Residual diagnostic plots for the primary model. Left: Residuals vs Fitted showing approximate linearity with mild heteroskedasticity at higher fitted values. Centre: Q-Q plot showing mild upper-tail deviation from normality. Right: Scale-Location plot confirming mild variance instability.", fig.width=10, fig.height=5}
 par(mfrow = c(1, 3))
 plot(model_primary, which = 1,
      main = "Residuals vs Fitted", sub = "")
@@ -369,7 +367,7 @@ are on their original scale. The decision to not transform predictors
 also keeps the straightforward percentage-change interpretation of 
 coefficients in the log-response model.
 
-```{r fig5, fig.cap="Scale-Location plots comparing the primary model using raw security deposit (left) and log1p(security deposit) (right). The smoother trend and residual spread are nearly identical across both plots, providing no evidence that the transformation improves homoscedasticity.", fig.width=9, fig.height=4}
+```{r fig5, fig.cap="Scale-Location plots comparing the primary model using raw security deposit (left) and log1p(security deposit) (right). The smoother trend and residual spread are nearly identical across both plots, providing no evidence that the transformation improves homoscedasticity.", fig.width=9, fig.height=6}
 par(mfrow = c(1, 2))
 plot(model_primary,     which = 3,
      main = "Scale-Location: Raw Deposit", sub = "")
@@ -407,13 +405,13 @@ from 0.0139 to 0.0022, and the final residual diagnostics (Figure 8)
 show improved symmetry in the Residuals vs. Fitted plot and better Q-Q 
 alignment relative to Figure 4.
 
-```{r fig6, fig.cap="Cook's Distance for all observations in the primary model. The dashed red line marks the threshold of 4/n = 0.00112. Observations 212, 1062, and 2614 are the most influential.", fig.width=8, fig.height=4.5}
+```{r fig6, fig.cap="Cook's Distance for all observations in the primary model. The dashed red line marks the threshold of 4/n = 0.00112. Observations 212, 1062, and 2614 are the most influential.", fig.width=8, fig.height=3.5}
 plot(model_primary, which = 4,
      main = "Cook's Distance (Primary Model)", sub = "")
 abline(h = threshold, col = "firebrick", lty = 2)
 ```
 
-```{r fig7, echo=FALSE, results='hide', fig.cap="Influence plot showing hat-values (leverage) on the x-axis, studentized residuals on the y-axis, and Cook's Distance encoded as circle size and colour. Observations 373 and 1416 are high leverage but not influential. Observations 2264 and 3032 are extreme outliers in Y. Observations 212 and 2614 are genuinely influential.", fig.width=8, fig.height=7}
+```{r fig7, echo=FALSE, results='hide', fig.cap="Influence plot showing hat-values (leverage) on the x-axis, studentized residuals on the y-axis, and Cook's Distance encoded as circle size and colour. Observations 373 and 1416 are high leverage but not influential. Observations 2264 and 3032 are extreme outliers in Y. Observations 212 and 2614 are genuinely influential.", fig.width=8, fig.height=5}
 car::influencePlot(model_primary)
 ```
 
@@ -640,10 +638,6 @@ plot(model_final, which = 4,
      main = "Cook's Distance (Final Model)", sub = "")
 abline(h = 4 / nrow(df_final), col = "firebrick", lty = 2)
 ```
-
-
-
-\pagebreak
 
 ## Section 6: Discussion and Conclusion
 
