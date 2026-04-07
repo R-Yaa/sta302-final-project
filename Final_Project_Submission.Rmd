@@ -264,7 +264,7 @@ kable(fit_table,
 
 Regression diagnostics indicate linear model assumptions are reasonable 
 but imperfect. The residuals are clustered around zero, suggesting that 
-linearity holds well, though slight curvature exhibits mild 
+linearity holds well, though slight curvature suggests mild 
 heteroskedasticity for higher fitted values. The Scale-Location plot 
 confirms some variance instability. The Q-Q plot reveals upper-tail 
 deviations, indicating mild departures from normality. Given the large 
